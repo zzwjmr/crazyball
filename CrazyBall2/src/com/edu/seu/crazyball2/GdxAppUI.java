@@ -147,8 +147,8 @@ public class GdxAppUI implements ApplicationListener, ContactListener,
 		float x = tBoard.getPosition().x;
 		float y = tBoard.getPosition().y;
 
-		board_mesh = new Mesh(false, 1, 1, new VertexAttribute(Usage.Position,
-				1, "a_position"), new VertexAttribute(Usage.ColorPacked, 1,
+		board_mesh = new Mesh(false, 4, 4, new VertexAttribute(Usage.Position,
+				3, "a_position"), new VertexAttribute(Usage.ColorPacked, 4,
 				"a_color"));
 		board_mesh.setVertices(new float[] { x - board_halfwidth,
 				y + board_halfheight, 0, Color.toFloatBits(0, 0, 0, 255),
@@ -162,17 +162,17 @@ public class GdxAppUI implements ApplicationListener, ContactListener,
 		x=tBall.getPosition().x;
 		y=tBall.getPosition().y;
 		
-		board_mesh = new Mesh(false, 4, 4, new VertexAttribute(Usage.Position,
-				3, "a_position"), new VertexAttribute(Usage.ColorPacked, 4,
-				"a_color"));
-		board_mesh.setVertices(new float[] { x - board_halfwidth,
-				y + board_halfheight, 0, Color.toFloatBits(0, 0, 0, 255),
-				x - board_halfwidth, y - board_halfheight, 0,
-				Color.toFloatBits(0, 0, 0, 255), x + board_halfwidth,
-				y + board_halfheight, 0, Color.toFloatBits(0, 0, 0, 255),
-				x + board_halfwidth, y - board_halfheight, 0,
-				Color.toFloatBits(0, 0, 0, 255) });
-		board_mesh.setIndices(new short[] { 0, 1, 2, 3 });
+//		board_mesh = new Mesh(false, 4, 4, new VertexAttribute(Usage.Position,
+//				3, "a_position"), new VertexAttribute(Usage.ColorPacked, 4,
+//				"a_color"));
+//		board_mesh.setVertices(new float[] { x - board_halfwidth,
+//				y + board_halfheight, 0, Color.toFloatBits(0, 0, 0, 255),
+//				x - board_halfwidth, y - board_halfheight, 0,
+//				Color.toFloatBits(0, 0, 0, 255), x + board_halfwidth,
+//				y + board_halfheight, 0, Color.toFloatBits(0, 0, 0, 255),
+//				x + board_halfwidth, y - board_halfheight, 0,
+//				Color.toFloatBits(0, 0, 0, 255) });
+//		board_mesh.setIndices(new short[] { 0, 1, 2, 3 });
 	}
 
 	// 创建世界
@@ -204,7 +204,7 @@ public class GdxAppUI implements ApplicationListener, ContactListener,
 		tBound4 = B2Util.createRectangle(world, SCREEN_WIDTH / 2,
 				bound_width / 2, 0, -board_halfheight - bound_width / 2,
 				BodyType.StaticBody, 0, 0, 0, 0, new BodyData(
-						BodyData.BODY_BORDER), null); // down
+						BodyData.BODY_BOTTOM), null); // down
 
 		// 创建球
 		tBall = B2Util.createCircle(world, circle_radius, 0, board_halfheight
@@ -213,10 +213,9 @@ public class GdxAppUI implements ApplicationListener, ContactListener,
 		// 创建挡板
 		tBoard = B2Util.createRectangle(world, SCREEN_WIDTH * boardrate,
 				board_halfheight, 0, 0, BodyType.StaticBody, 0, 0, 0, 0,
-				new BodyData(BodyData.BODY_BORDER), null);
+				new BodyData(BodyData.BODY_BOARD), null);
 
 		Vector2 tbv = tBoard.getWorldCenter();
-		System.out.println("ssssssss" + tbv);
 		// 创建砖块
 		// initBoard();
 		// 设置碰撞监听
@@ -232,7 +231,7 @@ public class GdxAppUI implements ApplicationListener, ContactListener,
 	// for (int j = 0; j < 3; j++) {
 	// Body tB = B2Util.createRectangle(world, 2, 1, i * 5 + 15,
 	// j * 4 + 15, BodyType.StaticBody, 0, 0, 0, 0,
-	// new BodyData(BodyData.BODY_BLOCK), null);
+	// new BodyData(BodyData.BODY_BOARD), null);
 	// ballList.add(tB);
 	// }
 	// }
@@ -324,11 +323,9 @@ public class GdxAppUI implements ApplicationListener, ContactListener,
 
 		BodyData dA = (BodyData) cA.getUserData();
 		BodyData dB = (BodyData) cB.getUserData();
-		if (dA.getType() == BodyData.BODY_BLOCK) {
-			dA.health = 0;
-		}
-		if (dB.getType() == BodyData.BODY_BLOCK) {
-			dB.health = 0;
+		if ((dA.getType() == BodyData.BODY_BALL && dB.getType() == BodyData.BODY_BOTTOM)||(dA.getType() == BodyData.BODY_BOTTOM && dB.getType() == BodyData.BODY_BALL) ) {
+//			dA.health = 0;
+			System.out.println("你输了");
 		}
 	}
 
@@ -399,8 +396,9 @@ public class GdxAppUI implements ApplicationListener, ContactListener,
 
 	public class BodyData {
 		public static final int BODY_BORDER = 1;
-		public static final int BODY_BALL = 2;
-		public static final int BODY_BLOCK = 3;
+		public static final int BODY_BOTTOM = 2;
+		public static final int BODY_BALL = 3;
+		public static final int BODY_BOARD = 4;
 
 		private int _type;
 		public int health = 100;
